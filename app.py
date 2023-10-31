@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from fastapi import FastAPI
 
-from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, SUPABASE_URL, SUPABASE_KEY, CREATE_USER
+from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER
 from data import WordModel, GetWordData, CreateUser
 from supabase_service import SupabaseService
 
