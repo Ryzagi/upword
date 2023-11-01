@@ -40,7 +40,7 @@ async def get_words_by_theme(request: WordModel):
     return supabase_service.get_words_by_theme(request.theme)
 
 
-@app.get(GET_WORD_DATA, response_model=Tuple[dict])
+@app.get(GET_WORD_DATA)
 async def get_word_data(request: GetWordData):
     return supabase_service.get_word_data(request.word, request.theme)
 
