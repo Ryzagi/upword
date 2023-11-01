@@ -2,6 +2,8 @@ import argparse
 from typing import List, Tuple
 
 from fastapi import FastAPI
+from starlette import status
+from starlette.responses import PlainTextResponse
 
 from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER
 from data import WordModel, GetWordData, CreateUser
@@ -10,6 +12,7 @@ from supabase_service import SupabaseService
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Upword API')
+    parser.add_argument('--host', type=str, help='Host')
     parser.add_argument('--url', type=str, help='Supabase URL')
     parser.add_argument('--key', type=str, help='Supabase key')
     return parser.parse_args()
@@ -24,6 +27,10 @@ supabase_service = SupabaseService(args.url, args.key)
 @app.get(GET_UNIQUE_THEMES, response_model=List[str])
 async def get_unique_themes():
     return supabase_service.get_unique_themes()
+
+@app.post("/health",status_code=status.HTTP_200_OK)
+def root():
+    return PlainTextResponse("OK")
 
 
 @app.get(GET_WORDS_BY_THEME)
