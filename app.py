@@ -20,15 +20,17 @@ def parse_args():
 
 app = FastAPI()
 
-args = parse_args()
-supabase_service = SupabaseService(args.url, args.key)
+#args = parse_args()
+supabase_service = SupabaseService("https://cjxpyxuygpvoyejcikwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824")
+#supabase_service = SupabaseService(args.url, args.key)
 
 
 @app.get(GET_UNIQUE_THEMES, response_model=List[str])
 async def get_unique_themes():
     return supabase_service.get_unique_themes()
 
-@app.post("/health",status_code=status.HTTP_200_OK)
+
+@app.post("/health", status_code=status.HTTP_200_OK)
 def root():
     return PlainTextResponse("OK")
 
