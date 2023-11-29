@@ -25,7 +25,7 @@ supabase_service = SupabaseService("https://cjxpyxuygpvoyejcikwf.supabase.co", "
 #supabase_service = SupabaseService(args.url, args.key)
 
 
-@app.get(GET_UNIQUE_THEMES, response_model=List[str])
+@app.get(GET_UNIQUE_THEMES)
 async def get_unique_themes():
     return supabase_service.get_unique_themes()
 
@@ -37,7 +37,7 @@ def root():
 
 @app.get(GET_WORDS_BY_THEME)
 async def get_words_by_theme(request: WordModel):
-    return supabase_service.get_words_by_theme(request.theme)
+    return {"words": supabase_service.get_words_by_theme(request.theme)}
 
 
 @app.get(GET_WORD_DATA)

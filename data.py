@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 
 class WordModel(BaseModel):
-    theme: str
+    theme: int
 
 
 class GetWordData(BaseModel):
