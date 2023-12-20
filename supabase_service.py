@@ -10,11 +10,11 @@ class SupabaseService:
         self.users_table = 'users'
         self.theme_id_table = 'theme_table'
 
-    def get_unique_themes(self) -> Dict[int, str]:
+    def get_unique_themes(self) -> Dict[int, List[str | str]]:
         # Fetch themes and their IDs from the themes_table
         response, error, obj = self.supabase_client.table(self.theme_id_table).select("*").execute()
         data = response[1]
-        id_to_theme = {entry['id']: entry['theme'] for entry in data}
+        id_to_theme = {entry['id']: [entry['theme'], f"{entry['theme']}.png"] for entry in data}
         return id_to_theme
 
     def get_words_by_theme(self, theme_id: int) -> Dict:
