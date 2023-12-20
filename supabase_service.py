@@ -1,4 +1,4 @@
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Union
 
 from supabase import create_client, Client
 
@@ -10,7 +10,7 @@ class SupabaseService:
         self.users_table = 'users'
         self.theme_id_table = 'theme_table'
 
-    def get_unique_themes(self) -> Dict[int, List[str | str]]:
+    def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
         response, error, obj = self.supabase_client.table(self.theme_id_table).select("*").execute()
         data = response[1]
