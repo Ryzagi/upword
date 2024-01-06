@@ -3,6 +3,7 @@ GET_UNIQUE_THEMES = "/upword/unique_themes"
 GET_WORDS_BY_THEME = "/upword/words_by_theme"
 GET_WORD_DATA = "/upword/word_data"
 CREATE_USER = "/upword/create_user"
+UPDATE_WORDS_COUNT = "/upword/update_words_count"
 
 # Supabase constants
 SUPABASE_URL = 'https://cjxpyxuygpvoyejcikwf.supabase.co'

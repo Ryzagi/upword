@@ -1,11 +1,10 @@
 import argparse
-from typing import List, Tuple
 
 from fastapi import FastAPI
 from starlette import status
 from starlette.responses import PlainTextResponse
 
-from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER
+from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT
 from data import WordModel, GetWordData, CreateUser
 from supabase_service import SupabaseService
 
@@ -20,9 +19,12 @@ def parse_args():
 
 app = FastAPI()
 
-#args = parse_args()
-supabase_service = SupabaseService("https://cjxpyxuygpvoyejcikwf.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824")
-#supabase_service = SupabaseService(args.url, args.key)
+# args = parse_args()
+supabase_service = SupabaseService("https://cjxpyxuygpvoyejcikwf.supabase.co",
+                                   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824")
+
+
+# supabase_service = SupabaseService(args.url, args.key)
 
 
 @app.get(GET_UNIQUE_THEMES)
@@ -33,6 +35,12 @@ async def get_unique_themes():
 @app.post("/health", status_code=status.HTTP_200_OK)
 def root():
     return PlainTextResponse("OK")
+
+
+@app.post(UPDATE_WORDS_COUNT)
+def update_count_words_in_theme_table():
+    supabase_service.update_count_words_in_theme_table()
+    return PlainTextResponse("Updated")
 
 
 @app.get(GET_WORDS_BY_THEME)

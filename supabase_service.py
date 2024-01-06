@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import List, Tuple, Dict, Union
 
 from supabase import create_client, Client
@@ -13,12 +14,50 @@ class SupabaseService:
 
     def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
-        response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru").execute()
+        response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru", "count_words").execute()
         data = response[1]
-        id_to_theme = {entry['id']: [entry['theme'], entry['theme_ru'],
-                                     self.supabase_client.storage.from_(self.bucket_name).get_public_url(
-                                         f"{entry['theme']}.png")] for entry in data}
-        return id_to_theme
+
+        themes = []
+        for entry in data:
+            theme_id = str(entry['id'])  # Assuming 'id' is an integer, converting it to string
+            theme = entry['theme']
+            russian_theme = entry['theme_ru']
+            count_words = entry['count_words']
+            theme_info = {
+                "id": theme_id,
+                "count_words": count_words,
+                "english_name": theme,
+                "russian_name": russian_theme,
+                "image_url": self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"{theme}.png")
+            }
+            themes.append(theme_info)
+
+        formatted_data = {"themes": themes}
+        return formatted_data
+
+    def count_rows_by_theme(self, theme: str) -> int:
+        # Fetching the count of rows for a specific theme from the 'words' table
+        response, error = self.supabase_client.from_('words').select("theme").eq('theme', theme).execute()
+
+        count = len(response[1])
+        return count
+
+    def update_count_words_in_theme_table(self):
+        # Fetching themes and their IDs from the theme_table
+        response, error = self.supabase_client.table('theme_table').select("id", "theme").execute()
+        print(response[1])
+        themes = response[1]
+
+        for theme_entry in themes:
+            theme_id = theme_entry['id']
+            theme_name = theme_entry['theme']
+
+            # Fetching count of rows for the theme from the 'words' table
+            row_count = self.count_rows_by_theme(theme_name)
+
+            # Updating 'count_words' column in the 'theme_table' for each theme
+            update_response, update_error = self.supabase_client.table('theme_table').update(
+                {'count_words': row_count}).eq('id', theme_id).execute()
 
     def get_words_by_theme(self, theme_id: int) -> Dict:
         theme = self.get_theme_by_id(theme_id)
