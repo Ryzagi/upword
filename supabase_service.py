@@ -22,7 +22,7 @@ class SupabaseService:
             theme_id = str(entry['id'])  # Assuming 'id' is an integer, converting it to string
             theme = entry['theme']
             russian_theme = entry['theme_ru']
-            count_words = entry['count_words']
+            count_words = str(entry['count_words'])
             theme_info = {
                 "id": theme_id,
                 "count_words": count_words,
