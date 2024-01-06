@@ -12,30 +12,32 @@ class SupabaseService:
 
     def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
-        response, error, obj = self.supabase_client.table(self.theme_id_table).select("*").execute()
+        response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru").execute()
         data = response[1]
-        id_to_theme = {entry['id']: [entry['theme'], f"{entry['theme']}.png"] for entry in data}
+        id_to_theme = {entry['id']: [entry['theme'], entry['theme_ru'],
+                                     self.supabase_client.storage.from_('bucket_name').get_public_url(
+                                         f"{entry['theme']}.png")] for entry in data}
         return id_to_theme
 
     def get_words_by_theme(self, theme_id: int) -> Dict:
         theme = self.get_theme_by_id(theme_id)
-        response, error, obj = self.supabase_client.table(self.words_table).select("id", "word").eq("theme",
-                                                                                                    theme).execute()
+        response, error = self.supabase_client.table(self.words_table).select("id", "word").eq("theme",
+                                                                                               theme).execute()
         print(response[1])
 
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
-        response, error, obj = self.supabase_client.table(self.theme_id_table).select("theme").eq("id",
-                                                                                                  theme_id).execute()
+        response, error = self.supabase_client.table(self.theme_id_table).select("theme").eq("id",
+                                                                                             theme_id).execute()
         print(response[1])
         return response[1][0]['theme']
 
     def get_word_data(self, word: str, theme: str) -> dict:
-        response, error, obj = self.supabase_client.table(self.words_table).select('*').eq('theme', theme).eq('word',
-                                                                                                              word).execute()
-        print(response[1][0])
-        return response[1][0]
+        response, error = self.supabase_client.table(self.words_table).select('*').eq('theme', theme).eq('word',
+                                                                                                         word).execute()
+        print(response)
+        return response
 
     def create_new_user(self, user_email: str, user_password: str, username: str, first_name: str, last_name: str):
         is_user_exists = self.is_user_exists(user_email)
@@ -47,7 +49,7 @@ class SupabaseService:
         if is_username_exists:
             return "User with this username already exists", 400
 
-        data, error, obj = self.supabase_client.table(self.users_table).insert(
+        data, error = self.supabase_client.table(self.users_table).insert(
             {
                 "email": user_email,
                 "password": user_password,
@@ -62,8 +64,8 @@ class SupabaseService:
         return response
 
     def is_username_exists(self, username: str):
-        response, error, obj = self.supabase_client.table(self.users_table).select("username").eq("username",
-                                                                                                  username).execute()
+        response, error = self.supabase_client.table(self.users_table).select("username").eq("username",
+                                                                                             username).execute()
 
         print(response)
         if response:
@@ -72,8 +74,8 @@ class SupabaseService:
             return False
 
     def is_user_exists(self, user_email: str):
-        response, error, obj = self.supabase_client.table(self.users_table).select("email").eq("email",
-                                                                                               user_email).execute()
+        response, error = self.supabase_client.table(self.users_table).select("email").eq("email",
+                                                                                          user_email).execute()
 
         print(response)
         if response:
