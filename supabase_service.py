@@ -9,13 +9,14 @@ class SupabaseService:
         self.words_table = 'words'
         self.users_table = 'users'
         self.theme_id_table = 'theme_table'
+        self.bucket_name = 'pictures'
 
     def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
         response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru").execute()
         data = response[1]
         id_to_theme = {entry['id']: [entry['theme'], entry['theme_ru'],
-                                     self.supabase_client.storage.from_('bucket_name').get_public_url(
+                                     self.supabase_client.storage.from_(self.bucket_name).get_public_url(
                                          f"{entry['theme']}.png")] for entry in data}
         return id_to_theme
 
