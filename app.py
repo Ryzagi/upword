@@ -1,6 +1,6 @@
 import argparse
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from starlette import status
 from starlette.responses import PlainTextResponse
 
@@ -43,9 +43,10 @@ def update_count_words_in_theme_table():
     return PlainTextResponse("Updated")
 
 
-@app.get(GET_WORDS_BY_THEME)
-async def get_words_by_theme(request: WordModel):
-    return {"words": supabase_service.get_words_by_theme(request.theme)}
+@app.get("/items/")
+async def words_by_theme(theme: int = Query(..., title="Theme ID", description="ID of the theme")):
+
+    return {"words": supabase_service.get_words_by_theme(theme)}
 
 
 @app.get(GET_WORD_DATA)
