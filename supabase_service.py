@@ -61,10 +61,10 @@ class SupabaseService:
 
     def get_words_by_theme(self, theme_id: int) -> Dict:
         theme = self.get_theme_by_id(theme_id)
-        response, error = self.supabase_client.table(self.words_table).select("id", "word").eq("theme",
-                                                                                               theme).execute()
-        print(response[1])
-
+        response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription",
+                                                                              "difficulty_level", "list_of_examples",
+                                                                              "sentence_in_english", "sentence_in_russian",
+                                                                              "translation_to_russian").eq("theme", theme).execute()
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
