@@ -4,8 +4,9 @@ from fastapi import FastAPI, Query
 from starlette import status
 from starlette.responses import PlainTextResponse
 
-from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT
-from data import WordModel, GetWordData, CreateUser
+from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT, \
+    PUT_WORD_IN_FOLDER, COUNT_WORDS_IN_FOLDER_BY_USER
+from data import WordModel, GetWordData, CreateUser, PutWordInFolder, CountWordsInFolderByUser
 from supabase_service import SupabaseService
 
 
@@ -45,7 +46,6 @@ def update_count_words_in_theme_table():
 
 @app.get("/items/")
 async def words_by_theme(theme: int = Query(..., title="Theme ID", description="ID of the theme")):
-
     return {"words": supabase_service.get_words_by_theme(theme)}
 
 
@@ -59,6 +59,15 @@ async def create_user(request: CreateUser):
     return supabase_service.create_new_user(request.email, request.password, request.username, request.first_name,
                                             request.last_name)
 
+
+@app.post(PUT_WORD_IN_FOLDER)
+async def put_word_in_folder(request: PutWordInFolder):
+    return supabase_service.put_word_in_folder(request.user_id, request.word_id, request.folder_name)
+
+
+@app.get(COUNT_WORDS_IN_FOLDER_BY_USER)
+async def count_words_in_folder_by_user(request: CountWordsInFolderByUser):
+    return supabase_service.count_words_in_folder_by_user(request.user_id, request.folder_name)
 
 if __name__ == "__main__":
     import uvicorn

@@ -18,3 +18,13 @@ class CreateUser(BaseModel):
     first_name: str
     last_name: str
 
+
+class PutWordInFolder(BaseModel):
+    user_id: str
+    word_id: int
+    folder_name: str
+
+
+class CountWordsInFolderByUser(BaseModel):
+    user_id: str
+    folder_name: str

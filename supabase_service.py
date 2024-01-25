@@ -14,7 +14,8 @@ class SupabaseService:
 
     def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
-        response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru", "count_words").execute()
+        response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru",
+                                                                                 "count_words").execute()
         data = response[1]
 
         themes = []
@@ -63,8 +64,10 @@ class SupabaseService:
         theme = self.get_theme_by_id(theme_id)
         response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription",
                                                                               "difficulty_level", "list_of_examples",
-                                                                              "sentence_in_english", "sentence_in_russian",
-                                                                              "translation_to_russian").eq("theme", theme).execute()
+                                                                              "sentence_in_english",
+                                                                              "sentence_in_russian",
+                                                                              "translation_to_russian").eq("theme",
+                                                                                                           theme).execute()
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
@@ -122,3 +125,23 @@ class SupabaseService:
             return True
         else:
             return False
+
+    def put_word_in_folder(self, user_id: str, word_id: str, folder_name: str):
+        # Define the data to be inserted
+        data = {
+            'user_id': user_id,
+            'word_id': word_id,
+            # Add other columns if needed
+        }
+        response = self.supabase_client.table(folder_name).insert([data]).execute()
+
+        return response
+
+    def count_words_in_folder_by_user(self, user_id: str, folder_name: str) -> int:
+        response, error = self.supabase_client.table(folder_name).select("word_id").eq("user_id",
+                                                                                       user_id).execute()
+
+        print(response)
+        return len(response[1])
+
+
