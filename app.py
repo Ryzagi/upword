@@ -66,12 +66,12 @@ async def put_word_in_folder(request: PutWordInFolder):
     return supabase_service.put_word_in_folder(request.user_id, request.word_id, request.folder_name)
 
 
-@app.get(COUNT_WORDS_IN_FOLDERS_BY_USER)
+@app.post(COUNT_WORDS_IN_FOLDERS_BY_USER)
 async def count_words_in_folder_by_user(request: CountWordsInFolderByUser):
     return supabase_service.count_words_in_folders_by_user(request.user_id)
 
 
-@app.get(GET_WORDS_IN_FOLDER_BY_USER)
+@app.post(GET_WORDS_IN_FOLDER_BY_USER)
 async def get_words_in_folder_by_user(request: GetWordsInFolderByUser):
     return supabase_service.get_words_in_folder_by_user(user_id=request.user_id, folder_name=request.folder_name)
 
