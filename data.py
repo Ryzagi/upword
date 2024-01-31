@@ -12,6 +12,7 @@ class GetWordData(BaseModel):
 
 
 class CreateUser(BaseModel):
+    user_id: str
     email: str
     password: str
     username: str
@@ -26,5 +27,9 @@ class PutWordInFolder(BaseModel):
 
 
 class CountWordsInFolderByUser(BaseModel):
+    user_id: str
+
+
+class GetWordsInFolderByUser(BaseModel):
     user_id: str
     folder_name: str

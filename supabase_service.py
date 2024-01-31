@@ -82,18 +82,20 @@ class SupabaseService:
         print(response)
         return response
 
-    def create_new_user(self, user_email: str, user_password: str, username: str, first_name: str, last_name: str):
+    def create_new_user(self, user_id: str, user_email: str, user_password: str, username: str, first_name: str,
+                        last_name: str):
         is_user_exists = self.is_user_exists(user_email)
-        is_username_exists = self.is_username_exists(username)
+        is_username_exists = self.is_user_id_exists(user_id)
         print(is_user_exists, is_username_exists)
 
         if is_user_exists:
             return "User with this email already exists", 400
         if is_username_exists:
-            return "User with this username already exists", 400
+            return "User with this user_id already exists", 400
 
         data, error = self.supabase_client.table(self.users_table).insert(
             {
+                "user_id": user_id,
                 "email": user_email,
                 "password": user_password,
                 "first_name": first_name,
@@ -106,12 +108,12 @@ class SupabaseService:
         print(response)
         return response
 
-    def is_username_exists(self, username: str):
-        response, error = self.supabase_client.table(self.users_table).select("username").eq("username",
-                                                                                             username).execute()
+    def is_user_id_exists(self, user_id: str):
+        response, error = self.supabase_client.table(self.users_table).select("user_id").eq("user_id",
+                                                                                            user_id).execute()
 
         print(response)
-        if response:
+        if len(response[1]) > 0:
             return True
         else:
             return False
@@ -121,17 +123,17 @@ class SupabaseService:
                                                                                           user_email).execute()
 
         print(response)
-        if response:
+        if len(response[1]) > 0:
             return True
         else:
             return False
 
-    def put_word_in_folder(self, user_id: str, word_id: str, folder_name: str):
+    def put_word_in_folder(self, user_id: str, word_id: int, folder_name: str):
         # Define the data to be inserted
         data = {
             'user_id': user_id,
             'word_id': word_id,
-            # Add other columns if needed
+
         }
         response = self.supabase_client.table(folder_name).insert([data]).execute()
 
@@ -141,7 +143,30 @@ class SupabaseService:
         response, error = self.supabase_client.table(folder_name).select("word_id").eq("user_id",
                                                                                        user_id).execute()
 
-        print(response)
         return len(response[1])
 
+    def count_words_in_folders_by_user(self, user_id: str) -> Dict[str, int]:
+        folder_names, error = self.supabase_client.table('folders').select("folder_name").execute()
+        folder_names = [folder['folder_name'].strip() for folder in folder_names[1]]
+        counts = defaultdict(int)
+        for folder_name in folder_names:
+            counts[folder_name] = self.count_words_in_folder_by_user(user_id, folder_name)
+        return counts
 
+    def get_ids_in_folder_by_user(self, user_id: str, folder_name: str) -> List[int]:
+        response, error = self.supabase_client.table(folder_name).select("word_id").eq("user_id",
+                                                                                       user_id).execute()
+        return [entry['word_id'] for entry in response[1]]
+
+    def get_words_by_ids(self, ids: List[int]) -> List[Dict]:
+        response, error = self.supabase_client.table(self.words_table).select("word", "transcription",
+                                                                              "difficulty_level", "list_of_examples",
+                                                                              "sentence_in_english",
+                                                                              "sentence_in_russian",
+                                                                              "translation_to_russian").in_("id",
+                                                                                                            ids).execute()
+        return response[1]
+
+    def get_words_in_folder_by_user(self, user_id: str, folder_name: str) -> List[Dict]:
+        ids = self.get_ids_in_folder_by_user(user_id, folder_name)
+        return self.get_words_by_ids(ids)
