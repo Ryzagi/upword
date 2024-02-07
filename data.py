@@ -11,7 +11,7 @@ class GetWordData(BaseModel):
     word: str
 
 
-class CreateUser(BaseModel):
+class UpdateUser(BaseModel):
     user_id: str
     email: str
     password: str

@@ -5,8 +5,10 @@ from starlette import status
 from starlette.responses import PlainTextResponse
 
 from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT, \
-    PUT_WORD_IN_FOLDER, GET_WORDS_FROM_FOLDER_BY_USER, COUNT_WORDS_IN_FOLDER_BY_USER
-from data import WordModel, GetWordData, CreateUser, PutWordInFolder, CountWordsInFolderByUser, GetWordsInFolderByUser
+    PUT_WORD_IN_FOLDER, GET_WORDS_FROM_FOLDER_BY_USER, COUNT_WORDS_IN_FOLDER_BY_USER, UPDATE_USER_INFO, SUPABASE_URL, \
+    SUPABASE_KEY
+from data import WordModel, GetWordData, PutWordInFolder, CountWordsInFolderByUser, GetWordsInFolderByUser, \
+    UpdateUser
 from supabase_service import SupabaseService
 
 
@@ -21,11 +23,7 @@ def parse_args():
 app = FastAPI()
 
 # args = parse_args()
-supabase_service = SupabaseService("https://cjxpyxuygpvoyejcikwf.supabase.co",
-                                   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824")
-
-
-# supabase_service = SupabaseService(args.url, args.key)
+supabase_service = SupabaseService(SUPABASE_URL, SUPABASE_KEY)
 
 
 @app.get(GET_UNIQUE_THEMES)
@@ -54,11 +52,17 @@ async def get_word_data(request: GetWordData):
     return supabase_service.get_word_data(request.word, request.theme)
 
 
-@app.post(CREATE_USER)
-async def create_user(request: CreateUser):
-    return supabase_service.create_new_user(user_id=request.user_id, user_email=request.email, user_password=request.password,
-                                            username=request.username, first_name=request.first_name,
-                                            last_name=request.last_name)
+@app.get(CREATE_USER)
+async def create_user():
+    return supabase_service.create_new_user()
+
+
+@app.post(UPDATE_USER_INFO)
+async def update_user(request: UpdateUser):
+    return supabase_service.update_user(user_id=request.user_id, user_email=request.email,
+                                        user_password=request.password,
+                                        username=request.username, first_name=request.first_name,
+                                        last_name=request.last_name)
 
 
 @app.post(PUT_WORD_IN_FOLDER)

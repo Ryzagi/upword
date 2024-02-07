@@ -74,7 +74,8 @@ class SupabaseService:
             sentence_in_english = item["sentence_in_english"]
             chars_to_remove = ",.!?;:"
             clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove))
-            item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"{word}_{clean_text}.png")
+            item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
+                f"{word}_{clean_text}.png")
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
@@ -90,31 +91,43 @@ class SupabaseService:
         print(response)
         return response
 
-    def create_new_user(self, user_id: str, user_email: str, user_password: str, username: str, first_name: str,
-                        last_name: str):
-        is_user_exists = self.is_user_exists(user_email)
-        is_username_exists = self.is_user_id_exists(user_id)
-        print(is_user_exists, is_username_exists)
-
-        if is_user_exists:
-            return "User with this email already exists", 400
-        if is_username_exists:
-            return "User with this user_id already exists", 400
-
+    def create_new_user(self):
         data, error = self.supabase_client.table(self.users_table).insert(
             {
-                "user_id": user_id,
-                "email": user_email,
-                "password": user_password,
-                "first_name": first_name,
-                "last_name": last_name,
-                "username": username
+                "email": "",
+                "password": "",
+                "first_name": "",
+                "last_name": "",
+                "username": ""
             }
         ).execute()
         print(data)
-        response = self.supabase_client.auth.sign_up({"email": user_email, "password": user_password})
-        print(response)
-        return response
+
+        return {"id": data[1][0]["id"], "user_id": data[1][0]['user_id']}
+
+    def update_user(self, user_id: str, user_email: str, user_password: str, username: str, first_name: str,
+                    last_name: str):
+        if len(user_id) > 0 or len(user_email) > 0:
+            is_email_exists = self.is_email_exists(user_email)
+            is_user_id_exists = self.is_user_id_exists(user_id)
+            is_username_exists = self.is_username_exists(username)
+            print(is_email_exists, is_username_exists)
+            if is_email_exists:
+                return "User with this email already exists", 400
+            if is_username_exists:
+                return "User with this username already exists", 400
+            if is_user_id_exists:
+                self.supabase_client.table(self.users_table).update(
+                    {
+                        "email": user_email,
+                        "password": user_password,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "username": username
+                    }
+                ).eq("user_id", user_id).execute()
+                return "User updated successfully", 200
+            # response = self.supabase_client.auth.sign_up({"email": user_email, "password": user_password})
 
     def is_user_id_exists(self, user_id: str):
         response, error = self.supabase_client.table(self.users_table).select("user_id").eq("user_id",
@@ -126,7 +139,17 @@ class SupabaseService:
         else:
             return False
 
-    def is_user_exists(self, user_email: str):
+    def is_username_exists(self, username: str):
+        response, error = self.supabase_client.table(self.users_table).select("username").eq("username",
+                                                                                             username).execute()
+
+        print(response)
+        if len(response[1]) > 0:
+            return True
+        else:
+            return False
+
+    def is_email_exists(self, user_email: str):
         response, error = self.supabase_client.table(self.users_table).select("email").eq("email",
                                                                                           user_email).execute()
 
