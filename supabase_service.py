@@ -68,6 +68,13 @@ class SupabaseService:
                                                                               "sentence_in_russian",
                                                                               "translation_to_russian").eq("theme",
                                                                                                            theme).execute()
+        # Iterate over each dictionary in the list and add the "url" key
+        for item in response[1]:
+            word = item["word"]
+            sentence_in_english = item["sentence_in_english"]
+            chars_to_remove = ",.!?;:"
+            clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove))
+            item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"{word}_{clean_text}.png")
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
@@ -79,6 +86,7 @@ class SupabaseService:
     def get_word_data(self, word: str, theme: str) -> dict:
         response, error = self.supabase_client.table(self.words_table).select('*').eq('theme', theme).eq('word',
                                                                                                          word).execute()
+
         print(response)
         return response
 
