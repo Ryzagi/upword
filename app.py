@@ -71,19 +71,18 @@ async def put_word_in_folder(request: PutWordInFolder):
 
 
 @app.get(COUNT_WORDS_IN_FOLDER_BY_USER)
-async def count_words_in_folder_by_user(user_id: str):
-    return supabase_service.count_words_in_folders_by_user(user_id)
+async def count_words_in_folder_by_user(user_id: str = Header(...)):
+    return supabase_service.count_words_in_folders_by_user(user_id=user_id)
 
 
 @app.get(GET_WORDS_FROM_FOLDER_BY_USER)
-async def get_words_in_folder_by_user(user_id: str, folder_name: str):
+async def get_words_in_folder_by_user(folder_name: str = Header(...), user_id: str = Header(...)):
     return supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder_name)
 
 
-@app.post(COUNT_REAL_WORDS_BY_THEME)
-async def count_real_words_by_theme(request: ThemeWordsCount):
-
-    return supabase_service.count_real_words_by_theme(user_id=request.user_id, theme=request.theme)
+@app.get(COUNT_REAL_WORDS_BY_THEME)
+async def count_real_words_by_theme(user_id: str = Header(...), theme: int = Header(...)):
+    return supabase_service.count_real_words_by_theme(user_id=user_id, theme=theme)
 
 
 if __name__ == "__main__":
