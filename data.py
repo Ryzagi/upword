@@ -1,4 +1,6 @@
 # Define a model for the word data
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -13,11 +15,11 @@ class GetWordData(BaseModel):
 
 class UpdateUser(BaseModel):
     user_id: str
-    email: str
-    password: str
-    username: str
-    first_name: str
-    last_name: str
+    email: Optional[str]
+    password: Optional[str] = None
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
 
 
 class PutWordInFolder(BaseModel):
@@ -33,3 +35,8 @@ class CountWordsInFolderByUser(BaseModel):
 class GetWordsInFolderByUser(BaseModel):
     user_id: str
     folder_name: str
+
+
+class ThemeWordsCount(BaseModel):
+    theme: int
+    user_id: str

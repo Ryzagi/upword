@@ -11,6 +11,7 @@ class SupabaseService:
         self.users_table = 'users'
         self.theme_id_table = 'theme_table'
         self.bucket_name = 'pictures'
+        self.words_status_table = 'words_status'
 
     def get_unique_themes(self) -> Dict:
         # Fetch themes and their IDs from the themes_table
@@ -114,8 +115,8 @@ class SupabaseService:
             print(is_email_exists, is_username_exists)
             if is_email_exists:
                 return "User with this email already exists", 400
-            if is_username_exists:
-                return "User with this username already exists", 400
+            #if is_username_exists:
+            #    return "User with this username already exists", 400
             if is_user_id_exists:
                 self.supabase_client.table(self.users_table).update(
                     {
@@ -167,7 +168,7 @@ class SupabaseService:
 
         }
         response = self.supabase_client.table(folder_name).insert([data]).execute()
-
+        self.put_word_in_words_status(user_id=user_id, folder_name=folder_name, word_id=word_id)
         return response
 
     def count_words_in_folder_by_user(self, user_id: str, folder_name: str) -> int:
@@ -201,3 +202,46 @@ class SupabaseService:
     def get_words_in_folder_by_user(self, user_id: str, folder_name: str) -> List[Dict]:
         ids = self.get_ids_in_folder_by_user(user_id, folder_name)
         return self.get_words_by_ids(ids)
+
+    def get_theme_by_word_id(self, word_id: int) -> str:
+        response, error = self.supabase_client.table(self.words_table).select("theme").eq("id",
+                                                                                          word_id).execute()
+        return response[1][0]['theme']
+
+    def count_words_in_words_status_by_user_and_theme(self, user_id: str, theme: str) -> int:
+        response, error = self.supabase_client.table(self.words_status_table).select("word_id").eq("user_id",
+                                                                                                   user_id).eq("theme",
+                                                                                                               theme).execute()
+        return len(response[1])
+
+    def count_real_words_by_theme(self, user_id: str, theme: int) -> int:
+        theme = self.get_theme_by_id(theme)
+        # get count_words from theme_table
+        response, error = self.supabase_client.table(self.theme_id_table).select("count_words").eq("theme",
+                                                                                                   theme).execute()
+        default_theme_count_words = response[1][0]['count_words']
+        # get count_words from words_status
+        response, error = self.supabase_client.table(self.words_status_table).select("word_id").eq("user_id",
+                                                                                                   user_id).eq("theme",
+                                                                                                               theme).execute()
+        count_words = len(response[1])
+        actually_count_words = default_theme_count_words - count_words
+        return actually_count_words
+
+    def put_word_in_words_status(self, user_id: str, folder_name: str, word_id: int):
+
+        theme = self.get_theme_by_word_id(word_id)
+
+        data = {
+            'user_id': user_id,
+            'word_id': word_id,
+            'theme': theme,
+            'folder_name': folder_name
+
+        }
+        response = self.supabase_client.table(self.words_status_table).insert([data]).execute()
+        return response
+
+    def get_ids_except_ids(self, ids: List[int]) -> List[int]:
+        response, error = self.supabase_client.table(self.words_table).select("id").neq("id", ids).execute()
+        return [entry['id'] for entry in response[1]]

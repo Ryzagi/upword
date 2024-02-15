@@ -6,9 +6,9 @@ from starlette.responses import PlainTextResponse
 
 from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT, \
     PUT_WORD_IN_FOLDER, GET_WORDS_FROM_FOLDER_BY_USER, COUNT_WORDS_IN_FOLDER_BY_USER, UPDATE_USER_INFO, SUPABASE_URL, \
-    SUPABASE_KEY
+    SUPABASE_KEY, COUNT_REAL_WORDS_BY_THEME
 from data import WordModel, GetWordData, PutWordInFolder, CountWordsInFolderByUser, GetWordsInFolderByUser, \
-    UpdateUser
+    UpdateUser, ThemeWordsCount
 from supabase_service import SupabaseService
 
 
@@ -78,6 +78,12 @@ async def count_words_in_folder_by_user(user_id: str):
 @app.get(GET_WORDS_FROM_FOLDER_BY_USER)
 async def get_words_in_folder_by_user(user_id: str, folder_name: str):
     return supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder_name)
+
+
+@app.post(COUNT_REAL_WORDS_BY_THEME)
+async def count_real_words_by_theme(request: ThemeWordsCount):
+
+    return supabase_service.count_real_words_by_theme(user_id=request.user_id, theme=request.theme)
 
 
 if __name__ == "__main__":
