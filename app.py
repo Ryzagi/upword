@@ -43,7 +43,7 @@ def update_count_words_in_theme_table():
 
 
 @app.get(GET_WORDS_BY_THEME)
-async def words_by_theme(theme: int = Header(..., title="Theme", description="Theme of the words"),
+async def words_by_theme(theme: int = Query(..., title="Theme", description="Theme of the words"),
                          user_id: str = Header(..., title="User ID", description="ID of the user")):
     get_words_by_theme_except_ids = supabase_service.get_words_by_theme_except_ids(theme=theme, user_id=user_id)
     return {"words": get_words_by_theme_except_ids}
@@ -78,12 +78,12 @@ async def count_words_in_folder_by_user(user_id: str = Header(...)):
 
 
 @app.get(GET_WORDS_FROM_FOLDER_BY_USER)
-async def get_words_in_folder_by_user(folder_name: str = Header(...), user_id: str = Header(...)):
-    return supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder_name)
+async def get_words_in_folder_by_user(folder: str = Query(...), user_id: str = Header(...)):
+    return supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder)
 
 
 @app.get(COUNT_REAL_WORDS_BY_THEME)
-async def count_real_words_by_theme(user_id: str = Header(...), theme: int = Header(...)):
+async def count_real_words_by_theme(user_id: str = Header(...), theme: int = Query(...)):
     return supabase_service.count_real_words_by_theme(user_id=user_id, theme=theme)
 
 if __name__ == "__main__":
