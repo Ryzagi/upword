@@ -42,9 +42,11 @@ def update_count_words_in_theme_table():
     return PlainTextResponse("Updated")
 
 
-@app.get("/items/")
-async def words_by_theme(theme: int = Query(..., title="Theme ID", description="ID of the theme")):
-    return {"words": supabase_service.get_words_by_theme(theme)}
+@app.get(GET_WORDS_BY_THEME)
+async def words_by_theme(theme: int = Header(..., title="Theme", description="Theme of the words"),
+                         user_id: str = Header(..., title="User ID", description="ID of the user")):
+    get_words_by_theme_except_ids = supabase_service.get_words_by_theme_except_ids(theme=theme, user_id=user_id)
+    return get_words_by_theme_except_ids
 
 
 @app.get(GET_WORD_DATA)
@@ -83,7 +85,6 @@ async def get_words_in_folder_by_user(folder_name: str = Header(...), user_id: s
 @app.get(COUNT_REAL_WORDS_BY_THEME)
 async def count_real_words_by_theme(user_id: str = Header(...), theme: int = Header(...)):
     return supabase_service.count_real_words_by_theme(user_id=user_id, theme=theme)
-
 
 if __name__ == "__main__":
     import uvicorn

@@ -242,6 +242,24 @@ class SupabaseService:
         response = self.supabase_client.table(self.words_status_table).insert([data]).execute()
         return response
 
-    def get_ids_except_ids(self, ids: List[int]) -> List[int]:
+    def get_ids_except_ids_(self, ids: List[int]) -> List[int]:
         response, error = self.supabase_client.table(self.words_table).select("id").neq("id", ids).execute()
         return [entry['id'] for entry in response[1]]
+
+    def get_ids_except_ids(self, ids: List[int], theme: str) -> List[int]:
+        response, error = self.supabase_client.table(self.words_table).select("id").not_.in_("id", ids).eq("theme", theme).execute()
+        return [entry['id'] for entry in response[1]]
+
+    def get_word_ids_from_status_table(self, user_id: str, theme: str) -> List[int]:
+        response, error = self.supabase_client.table(self.words_status_table).select("word_id").eq("user_id",
+                                                                                                   user_id).eq("theme",
+                                                                                                               theme).execute()
+        return [entry['word_id'] for entry in response[1]]
+
+    def get_words_by_theme_except_ids(self, user_id: str, theme: int) -> List[Dict]:
+        theme = self.get_theme_by_id(theme)
+        word_ids = self.get_word_ids_from_status_table(user_id, theme)
+        ids = self.get_ids_except_ids(word_ids, theme)
+        words = self.get_words_by_ids(ids)
+        return words
+

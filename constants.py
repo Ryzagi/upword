@@ -1,6 +1,6 @@
 # Constants for the upword API
 GET_UNIQUE_THEMES = "/upword/unique_themes"
-GET_WORDS_BY_THEME = "/upword/words_by_theme"
+GET_WORDS_BY_THEME = "/upword/theme_words"
 GET_WORD_DATA = "/upword/word_data"
 CREATE_USER = "/upword/create_user"
 UPDATE_WORDS_COUNT = "/upword/update_words_count"
@@ -11,5 +11,5 @@ UPDATE_USER_INFO = "/upword/update_user"
 COUNT_REAL_WORDS_BY_THEME = "/upword/count_real_words_by_theme/"
 
 # Supabase constants
-SUPABASE_URL = 'https://cjxpyxuygpvoyejcikwf.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824'
+SUPABASE_URL = "https://cjxpyxuygpvoyejcikwf.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqeHB5eHV5Z3B2b3llamNpa3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTUxNDkwNzYsImV4cCI6MjAxMDcyNTA3Nn0._mfSXgRm0SSFrK3BG2B0GLAZAWvIcbDTK7njU-Io824"
