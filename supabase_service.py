@@ -197,6 +197,15 @@ class SupabaseService:
                                                                               "sentence_in_russian",
                                                                               "translation_to_russian").in_("id",
                                                                                                             ids).execute()
+
+        # Iterate over each dictionary in the list and add the "url" key
+        for item in response[1]:
+            word = item["word"]
+            sentence_in_english = item["sentence_in_english"]
+            chars_to_remove = ",.!?;:"
+            clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove))
+            item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
+                f"{word}_{clean_text}.png")
         return response[1]
 
     def get_words_in_folder_by_user(self, user_id: str, folder_name: str) -> List[Dict]:
