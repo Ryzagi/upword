@@ -68,8 +68,8 @@ async def update_user(request: UpdateUser):
 
 
 @app.post(PUT_WORD_IN_FOLDER)
-async def put_word_in_folder(request: PutWordInFolder):
-    return supabase_service.put_word_in_folder(request.user_id, request.word_id, request.folder_name)
+async def put_word_in_folder(request: PutWordInFolder, folder: str = Header(...)):
+    return supabase_service.put_word_in_folder(request.user_id, request.word_id, folder)
 
 
 @app.get(COUNT_WORDS_IN_FOLDER_BY_USER)

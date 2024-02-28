@@ -191,7 +191,7 @@ class SupabaseService:
         return [entry['word_id'] for entry in response[1]]
 
     def get_words_by_ids(self, ids: List[int]) -> List[Dict]:
-        response, error = self.supabase_client.table(self.words_table).select("id","word", "transcription",
+        response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription",
                                                                               "difficulty_level", "list_of_examples",
                                                                               "sentence_in_english",
                                                                               "sentence_in_russian",

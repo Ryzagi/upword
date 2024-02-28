@@ -25,7 +25,6 @@ class UpdateUser(BaseModel):
 class PutWordInFolder(BaseModel):
     user_id: str
     word_id: int
-    folder_name: str
 
 
 class CountWordsInFolderByUser(BaseModel):
