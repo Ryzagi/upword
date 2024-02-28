@@ -46,7 +46,7 @@ def update_count_words_in_theme_table():
 async def words_by_theme(theme: int = Header(..., title="Theme", description="Theme of the words"),
                          user_id: str = Header(..., title="User ID", description="ID of the user")):
     get_words_by_theme_except_ids = supabase_service.get_words_by_theme_except_ids(theme=theme, user_id=user_id)
-    return get_words_by_theme_except_ids
+    return {"words": get_words_by_theme_except_ids}
 
 
 @app.get(GET_WORD_DATA)
