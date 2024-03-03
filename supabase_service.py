@@ -13,21 +13,40 @@ class SupabaseService:
         self.bucket_name = 'pictures'
         self.words_status_table = 'words_status'
 
-    def get_unique_themes(self) -> Dict:
-        # Fetch themes and their IDs from the themes_table
+    def get_unique_themes(self, user_id: str) -> Dict:
+        # First query to get theme data
         response, error = self.supabase_client.table(self.theme_id_table).select("id", "theme", "theme_ru",
                                                                                  "count_words").execute()
         data = response[1]
 
+        # Second query to get user-specific theme data
+        response_user, error_user = self.supabase_client.table(self.words_status_table).select("theme").eq("user_id",
+                                                                                                           user_id).execute()
+        user_data = response_user[1]
+
+        # Count occurrences of themes for the user
+        theme_count = {}
+        for entry_user in user_data:
+            theme = entry_user['theme']
+            if theme in theme_count:
+                theme_count[theme] += 1
+            else:
+                theme_count[theme] = 1
+
         themes = []
         for entry in data:
-            theme_id = str(entry['id'])  # Assuming 'id' is an integer, converting it to string
+            theme_id = str(entry['id'])
             theme = entry['theme']
             russian_theme = entry['theme_ru']
-            count_words = str(entry['count_words'])
+            default_count_words = entry['count_words']
+
+            # Calculate the count of occurrences of the theme for the user
+            count_words = theme_count.get(theme, 0)
+            actually_count_words = default_count_words - count_words
+
             theme_info = {
                 "id": theme_id,
-                "count_words": count_words,
+                "count_words": str(actually_count_words),
                 "english_name": theme,
                 "russian_name": russian_theme,
                 "image_url": self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"{theme}.png")

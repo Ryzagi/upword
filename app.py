@@ -27,8 +27,8 @@ supabase_service = SupabaseService(SUPABASE_URL, SUPABASE_KEY)
 
 
 @app.get(GET_UNIQUE_THEMES)
-async def get_unique_themes():
-    return supabase_service.get_unique_themes()
+async def get_unique_themes(user_id: str = Header(...)):
+    return supabase_service.get_unique_themes(user_id=user_id)
 
 
 @app.post("/health", status_code=status.HTTP_200_OK)
