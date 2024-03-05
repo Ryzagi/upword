@@ -134,7 +134,7 @@ class SupabaseService:
             print(is_email_exists, is_username_exists)
             if is_email_exists:
                 return "User with this email already exists", 400
-            #if is_username_exists:
+            # if is_username_exists:
             #    return "User with this username already exists", 400
             if is_user_id_exists:
                 self.supabase_client.table(self.users_table).update(
@@ -275,7 +275,8 @@ class SupabaseService:
         return [entry['id'] for entry in response[1]]
 
     def get_ids_except_ids(self, ids: List[int], theme: str) -> List[int]:
-        response, error = self.supabase_client.table(self.words_table).select("id").not_.in_("id", ids).eq("theme", theme).execute()
+        response, error = self.supabase_client.table(self.words_table).select("id").not_.in_("id", ids).eq("theme",
+                                                                                                           theme).execute()
         return [entry['id'] for entry in response[1]]
 
     def get_word_ids_from_status_table(self, user_id: str, theme: str) -> List[int]:
@@ -291,3 +292,9 @@ class SupabaseService:
         words = self.get_words_by_ids(ids)
         return words
 
+    def delete_all_words_by_user(self, user_id: str):
+        folders = ["learn", "repeat", "know"]
+        for folder in folders:
+            response, error = self.supabase_client.table(folder).delete().eq("user_id", user_id).execute()
+        response, error = self.supabase_client.table(self.words_status_table).delete().eq("user_id", user_id).execute()
+        return response

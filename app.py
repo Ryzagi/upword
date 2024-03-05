@@ -6,7 +6,7 @@ from starlette.responses import PlainTextResponse
 
 from constants import GET_WORDS_BY_THEME, GET_UNIQUE_THEMES, GET_WORD_DATA, CREATE_USER, UPDATE_WORDS_COUNT, \
     PUT_WORD_IN_FOLDER, GET_WORDS_FROM_FOLDER_BY_USER, COUNT_WORDS_IN_FOLDER_BY_USER, UPDATE_USER_INFO, SUPABASE_URL, \
-    SUPABASE_KEY, COUNT_REAL_WORDS_BY_THEME
+    SUPABASE_KEY, COUNT_REAL_WORDS_BY_THEME, DELETE_WORDS_FROM_FOLDER
 from data import WordModel, GetWordData, PutWordInFolder, CountWordsInFolderByUser, GetWordsInFolderByUser, \
     UpdateUser, ThemeWordsCount
 from supabase_service import SupabaseService
@@ -85,6 +85,12 @@ async def get_words_in_folder_by_user(folder: str = Query(...), user_id: str = H
 @app.get(COUNT_REAL_WORDS_BY_THEME)
 async def count_real_words_by_theme(user_id: str = Header(...), theme: int = Query(...)):
     return supabase_service.count_real_words_by_theme(user_id=user_id, theme=theme)
+
+
+@app.get(DELETE_WORDS_FROM_FOLDER)
+async def delete_words(user_id: str = Header(...)):
+    return supabase_service.delete_all_words_by_user(user_id=user_id)
+
 
 if __name__ == "__main__":
     import uvicorn

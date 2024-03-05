@@ -9,6 +9,7 @@ COUNT_WORDS_IN_FOLDER_BY_USER = "/upword/count_words_in_folder/"
 GET_WORDS_FROM_FOLDER_BY_USER = "/upword/folder_words/"
 UPDATE_USER_INFO = "/upword/update_user"
 COUNT_REAL_WORDS_BY_THEME = "/upword/count_theme_words/"
+DELETE_WORDS_FROM_FOLDER = "/upword/delete_words/"
 
 # Supabase constants
 SUPABASE_URL = "https://cjxpyxuygpvoyejcikwf.supabase.co"
