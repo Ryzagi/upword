@@ -79,7 +79,7 @@ async def count_words_in_folder_by_user(user_id: str = Header(...)):
 
 @app.get(GET_WORDS_FROM_FOLDER_BY_USER)
 async def get_words_in_folder_by_user(folder: str = Query(...), user_id: str = Header(...)):
-    return {"data": supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder)}
+    return {"words": supabase_service.get_words_in_folder_by_user(user_id=user_id, folder_name=folder)}
 
 
 @app.get(COUNT_REAL_WORDS_BY_THEME)
