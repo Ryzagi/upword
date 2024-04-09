@@ -215,7 +215,7 @@ class SupabaseService:
                                                                               "difficulty_level", "list_of_examples",
                                                                               "sentence_in_english",
                                                                               "sentence_in_russian",
-                                                                              "translation_to_russian").in_("id",
+                                                                              "translation_to_russian","eng_ru_sentences").in_("id",
                                                                                                             ids).execute()
 
         # Iterate over each dictionary in the list and add the "url" key
