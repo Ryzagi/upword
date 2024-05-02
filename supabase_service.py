@@ -50,7 +50,7 @@ class SupabaseService:
                 "count_words": str(actually_count_words),
                 "english_name": theme,
                 "russian_name": russian_theme,
-                "image_url": self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"{theme}.png")
+                "image_url": self.supabase_client.storage.from_(self.bucket_name).get_public_url(f"themes/{theme}.png")
             }
             themes.append(theme_info)
 
