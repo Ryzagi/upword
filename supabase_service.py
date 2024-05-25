@@ -211,7 +211,7 @@ class SupabaseService:
         return [entry['word_id'] for entry in response[1]]
 
     def get_words_by_ids(self, ids: List[int]) -> List[Dict]:
-        response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription",
+        response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription", "theme",
                                                                               "difficulty_level", "list_of_examples",
                                                                               "sentence_in_english",
                                                                               "sentence_in_russian",
@@ -220,12 +220,13 @@ class SupabaseService:
 
         # Iterate over each dictionary in the list and add the "url" key
         for item in response[1]:
-            word = item["word"]
+            word = item["word"].replace(" ", "_")
+            theme = item["theme"]
             sentence_in_english = item["sentence_in_english"]
             chars_to_remove = ",.!?;:"
-            clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove))
+            clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove)).replace(" ", "_")
             item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
-                f"{word}_{clean_text}.png")
+                f"{theme}/{word}_{clean_text}.png")
         return response[1]
 
     def get_words_in_folder_by_user(self, user_id: str, folder_name: str) -> List[Dict]:
