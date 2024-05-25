@@ -96,7 +96,7 @@ class SupabaseService:
             chars_to_remove = ",.!?;:"
             clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove))
             item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
-                f"{word}_{clean_text}.png")
+                f"{theme}/{word}_{clean_text}.png")
         return response[1]
 
     def get_theme_by_id(self, theme_id: int) -> str:
@@ -257,11 +257,14 @@ class SupabaseService:
         response, error = self.supabase_client.table(self.theme_id_table).select("count_words").eq("theme",
                                                                                                    theme).execute()
         default_theme_count_words = response[1][0]['count_words']
+        print(theme)
+        print(default_theme_count_words)
         # get count_words from words_status
         response, error = self.supabase_client.table(self.words_status_table).select("word_id").eq("user_id",
                                                                                                    user_id).eq("theme",
                                                                                                                theme).execute()
         count_words = len(response[1])
+        print(count_words)
         actually_count_words = default_theme_count_words - count_words
         return actually_count_words
 
