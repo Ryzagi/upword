@@ -180,15 +180,22 @@ class SupabaseService:
         else:
             return False
 
-    def put_word_in_folder(self, user_id: str, word_id: int, folder_name: str):
+    def put_word_in_folder(self, user_id: str, word_id: int, folder_name: str, source: str):
         # Define the data to be inserted
         data = {
             'user_id': user_id,
             'word_id': word_id,
 
         }
-        response = self.supabase_client.table(folder_name).insert([data]).execute()
-        self.put_word_in_words_status(user_id=user_id, folder_name=folder_name, word_id=word_id)
+        folders = ["learn", "repeat", "know"]
+        if source not in folders:
+            response = self.supabase_client.table(folder_name).insert([data]).execute()
+            self.put_word_in_words_status(user_id=user_id, folder_name=folder_name, word_id=word_id)
+        else:
+            response = self.supabase_client.table(folder_name).insert([data]).execute()
+            self.put_word_in_words_status(user_id=user_id, folder_name=folder_name, word_id=word_id)
+            self.delete_word_in_folder(user_id=user_id, word_id=word_id, source_folder_name=source)
+            self.delete_word_in_folder(user_id=user_id, word_id=word_id, source_folder_name=self.words_status_table)
         return response
 
     def count_words_in_folder_by_user(self, user_id: str, folder_name: str) -> int:
@@ -310,4 +317,8 @@ class SupabaseService:
         for folder in folders:
             response, error = self.supabase_client.table(folder).delete().eq("user_id", user_id).execute()
         response, error = self.supabase_client.table(self.words_status_table).delete().eq("user_id", user_id).execute()
+        return response
+
+    def delete_word_in_folder(self, user_id: str, word_id: int, source_folder_name: str):
+        response, error = self.supabase_client.table(source_folder_name).delete().eq("user_id", user_id).eq("word_id", word_id).execute()
         return response
