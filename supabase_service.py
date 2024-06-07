@@ -240,10 +240,11 @@ class SupabaseService:
         ids = self.get_ids_in_folder_by_user(user_id, folder_name)
         if folder_name == "learn":
             words = self.get_words_by_ids(ids)
-            #all_words = [word_dict["word"] for word_dict in words]
             for word_dict in words:
-                # Select 2 random words (you can adjust the number as needed)
-                wrong_words = random.sample([word["word"] for word in words if word["word"] != word_dict["word"]], 3)
+                word_list = [word["word"] for word in words if word["word"] != word_dict["word"]]
+                # Ensure we do not attempt to sample more words than are available
+                sample_size = min(3, len(word_list))
+                wrong_words = random.sample(word_list, sample_size)
                 word_dict["wrong_words"] = wrong_words
             return words
         return self.get_words_by_ids(ids)
