@@ -236,12 +236,38 @@ class SupabaseService:
                 f"{theme}/{word}_{clean_text}.png")
         return response[1]
 
+    def extend_list_until_length_is_n(self, n: int, words_list: List[str], distractors_list: List[str]) -> List[str]:
+        """
+        Extend the first list with elements from the second list until the length of the first list is equal to n.
+        Args:
+            n: The desired length of the first list
+            words_list: The list to be extended
+            distractors_list: The list to draw elements from
+        Returns:
+            Extended list
+        """
+        # Calculate the number of elements needed
+        needed_elements = n - len(words_list)
+
+        # Extend the first list with the required number of elements from the second list
+        if needed_elements > 0:
+            words_list.extend(distractors_list[:needed_elements])
+        return words_list
+
     def get_words_in_folder_by_user(self, user_id: str, folder_name: str) -> List[Dict]:
         ids = self.get_ids_in_folder_by_user(user_id, folder_name)
         if folder_name == "learn":
             words = self.get_words_by_ids(ids)
             for word_dict in words:
                 word_list = [word["word"] for word in words if word["word"] != word_dict["word"]]
+                # Add words until we have at least 4 words
+                distractors_count = 4
+                if len(word_list) < distractors_count:
+                    distractors = ['A', 'It', 'Is', 'And']
+                    word_list = self.extend_list_until_length_is_n(n=distractors_count, words_list=word_list,
+                                                                   distractors_list=distractors)
+                # Ensure we do not attempt to sample more words than are available
+                word_dict["wrong_words"] = word_list
                 # Ensure we do not attempt to sample more words than are available
                 sample_size = min(3, len(word_list))
                 wrong_words = random.sample(word_list, sample_size)
