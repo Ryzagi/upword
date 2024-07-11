@@ -218,7 +218,7 @@ class SupabaseService:
         return [entry['word_id'] for entry in response[1]]
 
     def get_words_by_ids(self, ids: List[int]) -> List[Dict]:
-        response, error = self.supabase_client.table(self.words_table).select("id", "word", "transcription", "theme",
+        response = self.supabase_client.table(self.words_table).select("id", "word", "transcription", "theme",
                                                                               "difficulty_level", "list_of_examples",
                                                                               "sentence_in_english",
                                                                               "sentence_in_russian",
@@ -226,7 +226,7 @@ class SupabaseService:
                                                                                                             ids).execute()
 
         # Iterate over each dictionary in the list and add the "url" key
-        for item in response[1]:
+        for item in response.data:
             word = item["word"].replace(" ", "_")
             theme = item["theme"]
             sentence_in_english = item["sentence_in_english"]
@@ -234,7 +234,13 @@ class SupabaseService:
             clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove)).replace(" ", "_")
             item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
                 f"{theme}/{word}_{clean_text}.png")
-        return response[1]
+            sentences_transformed = [{"eng": sentence[0], "rus": sentence[1]} for sentence in
+                                     item.get("eng_ru_sentences", [])]
+            item["sentences"] = sentences_transformed
+            # Remove the original eng_ru_sentences field
+            if "eng_ru_sentences" in item:
+                del item["eng_ru_sentences"]
+        return response.data
 
     def extend_list_until_length_is_n(self, n: int, words_list: List[str], distractors_list: List[str]) -> List[str]:
         """
