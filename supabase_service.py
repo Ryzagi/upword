@@ -230,7 +230,7 @@ class SupabaseService:
             word = item["word"].replace(" ", "_")
             theme = item["theme"]
             sentence_in_english = item["sentence_in_english"]
-            chars_to_remove = ",.!?;:"
+            chars_to_remove = ",.!?;:$%"
             clean_text = sentence_in_english.translate(str.maketrans('', '', chars_to_remove)).replace(" ", "_")
             item["image_url"] = self.supabase_client.storage.from_(self.bucket_name).get_public_url(
                 f"{theme}/{word}_{clean_text}.png")
